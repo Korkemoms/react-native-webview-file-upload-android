@@ -35,6 +35,139 @@ public class AndroidWebViewManager extends ReactWebViewManager {
     public String getName() {
         return "AndroidWebView";
     }
+    
+    @Override
+    protected static class ReactWebView extends WebView implements LifecycleEventListener {
+        protected @Nullable String injectedJS;
+        protected boolean messagingEnabled = false;
+        protected @Nullable ReactWebViewClient mReactWebViewClient;
+
+        protected class ReactWebViewBridge {
+          ReactWebView mContext;
+
+          ReactWebViewBridge(ReactWebView c) {
+            mContext = c;
+          }
+
+          @JavascriptInterface
+          public void postMessage(String message) {
+            mContext.onMessage(message);
+          }
+        }
+
+        /**
+         * WebView must be created with an context of the current activity
+         *
+         * Activity Context is required for creation of dialogs internally by WebView
+         * Reactive Native needed for access to ReactNative internal system functionality
+         *
+         */
+        public ReactWebView(ThemedReactContext reactContext) {
+          super(reactContext);
+        }
+
+        @Override
+        public void onHostResume() {
+          // do nothing
+        }
+
+        @Override
+        public void onHostPause() {
+          // do nothing
+        }
+
+        @Override
+        public void onHostDestroy() {
+          cleanupCallbacksAndDestroy();
+        }
+
+        @Override
+        public void setWebViewClient(WebViewClient client) {
+          super.setWebViewClient(client);
+          mReactWebViewClient = (ReactWebViewClient)client;
+        }
+
+        public @Nullable ReactWebViewClient getReactWebViewClient() {
+          return mReactWebViewClient;
+        }
+
+        public void setInjectedJavaScript(@Nullable String js) {
+          injectedJS = js;
+        }
+
+        protected ReactWebViewBridge createReactWebViewBridge(ReactWebView webView) {
+          return new ReactWebViewBridge(webView);
+        }
+
+        public void setMessagingEnabled(boolean enabled) {
+          if (messagingEnabled == enabled) {
+            return;
+          }
+
+          messagingEnabled = enabled;
+          if (enabled) {
+            addJavascriptInterface(createReactWebViewBridge(this), BRIDGE_NAME);
+            linkBridge();
+          } else {
+            removeJavascriptInterface(BRIDGE_NAME);
+          }
+        }
+
+        protected void evaluateJavascriptWithFallback(String script) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            evaluateJavascript(script, null);
+            return;
+          }
+
+          try {
+            loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            // UTF-8 should always be supported
+            throw new RuntimeException(e);
+          }
+        }
+
+        public void callInjectedJavaScript() {
+          if (getSettings().getJavaScriptEnabled() &&
+            injectedJS != null &&
+            !TextUtils.isEmpty(injectedJS)) {
+            evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
+          }
+        }
+
+        public void linkBridge() {
+          if (messagingEnabled) {
+            if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+              // See isNative in lodash
+              String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+              evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                  if (value.equals("true")) {
+                    FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+                  }
+                }
+              });
+            }
+
+            evaluateJavascriptWithFallback("(" +
+              "window.originalPostMessage = window.postMessage," +
+              "window.postMessage = function(data) {" +
+              BRIDGE_NAME + ".postMessage(String(data));" +
+              "}" +
+              ")");
+          }
+        }
+
+        public void onMessage(String message) {
+          dispatchEvent(this, new TopMessageEvent(this.getId(), message));
+        }
+
+        protected void cleanupCallbacksAndDestroy() {
+          setWebViewClient(null);
+          destroy();
+        }
+    }
 
     @Override
     protected WebView createViewInstance(ThemedReactContext reactContext) {
