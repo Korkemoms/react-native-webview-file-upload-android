@@ -38,12 +38,10 @@ public class AndroidWebViewManager extends ReactWebViewManager {
 
     @Override
     protected WebView createViewInstance(ThemedReactContext reactContext) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (ReactBuildConfig.DEBUG) {
-                WebView.setWebContentsDebuggingEnabled(true);
-            }
+        if (ReactBuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true);
         }
-
+        
         WebView view = super.createViewInstance(reactContext);
         //Now do our own setWebChromeClient, patching in file chooser support
         final AndroidWebViewModule module = this.aPackage.getModule();
