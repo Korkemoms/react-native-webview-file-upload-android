@@ -21,11 +21,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 
-
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.webview.ReactWebViewManager;
 import com.oblongmana.webviewfileuploadandroid.AndroidWebViewModule;
+
+import android.content.pm.ApplicationInfo;
 
 public class AndroidWebViewManager extends ReactWebViewManager {
 
