@@ -53,16 +53,15 @@ public class AndroidWebViewManager extends ReactWebViewManager {
     return "AndroidWebView";
   }
 
-  @Override
-  protected static class ReactWebView extends WebView implements LifecycleEventListener {
+  protected static class WebtempWebView extends WebView implements LifecycleEventListener {
     protected @Nullable String injectedJS;
     protected boolean messagingEnabled = false;
     protected @Nullable ReactWebViewClient mReactWebViewClient;
 
     protected class ReactWebViewBridge {
-      ReactWebView mContext;
+      WebtempWebView mContext;
 
-      ReactWebViewBridge(ReactWebView c) {
+      ReactWebViewBridge(WebtempWebView c) {
         mContext = c;
       }
 
@@ -80,7 +79,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
      * functionality
      *
      */
-    public ReactWebView(ThemedReactContext reactContext) {
+    public WebtempWebView(ThemedReactContext reactContext) {
       super(reactContext);
     }
 
@@ -113,7 +112,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
       injectedJS = js;
     }
 
-    protected ReactWebViewBridge createReactWebViewBridge(ReactWebView webView) {
+    protected ReactWebViewBridge createReactWebViewBridge(WebtempWebView webView) {
       return new ReactWebViewBridge(webView);
     }
 
