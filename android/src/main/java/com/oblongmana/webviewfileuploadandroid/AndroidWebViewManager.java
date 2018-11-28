@@ -66,7 +66,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
       }
 
       @JavascriptInterface
-      public void postMessage(String message) {
+      public void wtappMessage(String message) {
         mContext.onMessage(message);
       }
     }
