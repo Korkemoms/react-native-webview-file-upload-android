@@ -26,7 +26,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.webview.ReactWebViewManager;
 import com.oblongmana.webviewfileuploadandroid.AndroidWebViewModule;
 
-import android.content.pm.ApplicationInfo;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 public class AndroidWebViewManager extends ReactWebViewManager {
 
@@ -39,7 +39,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
     @Override
     protected WebView createViewInstance(ThemedReactContext reactContext) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+            if (ReactBuildConfig.DEBUG) {
                 WebView.setWebContentsDebuggingEnabled(true);
             }
         }
