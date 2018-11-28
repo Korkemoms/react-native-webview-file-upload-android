@@ -38,9 +38,9 @@ public class AndroidWebViewManager extends ReactWebViewManager {
 
     @Override
     protected WebView createViewInstance(ThemedReactContext reactContext) {
-        if (ReactBuildConfig.DEBUG) {
+        //if (ReactBuildConfig.DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true);
-        }
+        //}
         
         WebView view = super.createViewInstance(reactContext);
         //Now do our own setWebChromeClient, patching in file chooser support
