@@ -66,7 +66,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
       }
 
       @JavascriptInterface
-      public void postMessage(String message) {
+      public void wtappMessage(String message) {
         mContext.onMessage(message);
       }
     }
@@ -123,10 +123,10 @@ public class AndroidWebViewManager extends ReactWebViewManager {
 
       messagingEnabled = enabled;
       if (enabled) {
-        addJavascriptInterface(createReactWebViewBridge(this), BRIDGE_NAME);
+        addJavascriptInterface(createReactWebViewBridge(this), "WTAPP_WEBVIEW_BRIDGE");
         linkBridge();
       } else {
-        removeJavascriptInterface(BRIDGE_NAME);
+        removeJavascriptInterface("WTAPP_WEBVIEW_BRIDGE");
       }
     }
 
@@ -166,8 +166,9 @@ public class AndroidWebViewManager extends ReactWebViewManager {
           });
         }
 
-        evaluateJavascriptWithFallback("(" + "window.originalPostMessage = window.postMessage,"
-            + "window.postMessage = function(data) {" + BRIDGE_NAME + ".postMessage(String(data));" + "}" + ")");
+        evaluateJavascriptWithFallback(
+            "(" + "window.originalPostMessage = window.postMessage," + "window.wtappMessage = function(data) {"
+                + "WTAPP_WEBVIEW_BRIDGE" + ".postMessage(String(data));" + "}" + ")");
       }
     }
 
