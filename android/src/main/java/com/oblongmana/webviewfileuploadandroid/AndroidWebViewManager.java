@@ -66,7 +66,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
       }
 
       @JavascriptInterface
-      public void wtappMessage(String message) {
+      public void postMessage(String message) {
         mContext.onMessage(message);
       }
     }
@@ -167,7 +167,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
         }
 
         evaluateJavascriptWithFallback("(" + "window.originalPostMessage = window.postMessage,"
-            + "window.wtappMessage = function(data) {" + BRIDGE_NAME + ".postMessage(String(data));" + "}" + ")");
+            + "window.postMessage = function(data) {" + BRIDGE_NAME + ".postMessage(String(data));" + "}" + ")");
       }
     }
 
