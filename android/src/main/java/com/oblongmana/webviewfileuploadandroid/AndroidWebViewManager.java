@@ -167,7 +167,7 @@ public class AndroidWebViewManager extends ReactWebViewManager {
         }
 
         evaluateJavascriptWithFallback("(" + "window.originalPostMessage = window.postMessage,"
-            + "window.postMessage = function(data) {" + BRIDGE_NAME + ".postMessage(String(data));" + "}" + ")");
+            + "window.wtappMessage = function(data) {" + BRIDGE_NAME + ".postMessage(String(data));" + "}" + ")");
       }
     }
 
